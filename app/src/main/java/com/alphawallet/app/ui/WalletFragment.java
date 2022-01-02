@@ -393,11 +393,12 @@ public class WalletFragment extends BaseFragment implements
                         adapter.setFilterType(TokensAdapter.FILTER_CURRENCY);
                         viewModel.prepare();
                         break;
-                    case TAB_COLLECTIBLES:
-                        setGridLayoutManager(tab.getPosition());
-                        adapter.setFilterType(TokensAdapter.FILTER_COLLECTIBLES);
-                        viewModel.prepare();
-                        break;
+                    //  Azzy Mitt -> Closed collectibles
+                    // case TAB_COLLECTIBLES:
+                    //    setGridLayoutManager(tab.getPosition());
+                    //    adapter.setFilterType(TokensAdapter.FILTER_COLLECTIBLES);
+                    //    viewModel.prepare();
+                    //    break;
                     case TAB_ATTESTATIONS: // TODO: Filter Attestations
                         break;
                     default:

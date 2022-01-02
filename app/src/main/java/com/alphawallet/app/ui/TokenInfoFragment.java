@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.alphawallet.app.BuildConfig;
 import com.alphawallet.app.C;
 import com.alphawallet.app.R;
+import com.alphawallet.app.entity.CustomViewSettings;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.entity.tokens.TokenPortfolio;
 import com.alphawallet.app.service.TickerService;
@@ -52,6 +53,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+
 
 public class TokenInfoFragment extends BaseFragment {
     public static final int CHART_1D = 0;
@@ -98,8 +100,8 @@ public class TokenInfoFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        if (getArguments() != null)
-        {
+
+        if (getArguments() != null) {
             viewModel = new ViewModelProvider(this, viewModelFactory)
                     .get(TokenInfoViewModel.class);
 
@@ -107,7 +109,8 @@ public class TokenInfoFragment extends BaseFragment {
             token = viewModel.getTokensService().getToken(chainId, getArguments().getString(C.EXTRA_ADDRESS));
 
             initTabLayout(view);
-            historyChart = view.findViewById(R.id.history_chart);
+            if (CustomViewSettings.stats())
+                historyChart = view.findViewById(R.id.history_chart);
             tokenInfoHeaderLayout = view.findViewById(R.id.layout_token_header);
             tokenInfoLayout = view.findViewById(R.id.layout_token_info);
 
@@ -131,13 +134,13 @@ public class TokenInfoFragment extends BaseFragment {
             tokenInfoHeaderView = new TokenInfoHeaderView(getContext(), token, viewModel.getTokensService());
             tokenInfoHeaderLayout.addView(tokenInfoHeaderView);
 
-            /*tokenInfoLayout.addView(new TokenInfoCategoryView(getContext(), "Portfolio"));
-            tokenInfoLayout.addView(portfolioBalance);
-            tokenInfoLayout.addView(portfolioProfit24Hr);
-            tokenInfoLayout.addView(portfolioProfitTotal);
-            tokenInfoLayout.addView(portfolioShare);
-            tokenInfoLayout.addView(portfolioAverageCost);
-            tokenInfoLayout.addView(portfolioPaidFees);*/
+                /*tokenInfoLayout.addView(new TokenInfoCategoryView(getContext(), "Portfolio"));
+                tokenInfoLayout.addView(portfolioBalance);
+                tokenInfoLayout.addView(portfolioProfit24Hr);
+                tokenInfoLayout.addView(portfolioProfitTotal);
+                tokenInfoLayout.addView(portfolioShare);
+                tokenInfoLayout.addView(portfolioAverageCost);
+                tokenInfoLayout.addView(portfolioPaidFees);*/
 
             tokenInfoLayout.addView(new TokenInfoCategoryView(getContext(), getString(R.string.performance)));
             tokenInfoLayout.addView(performance1D);
@@ -152,12 +155,14 @@ public class TokenInfoFragment extends BaseFragment {
             tokenInfoLayout.addView(stats1YearLow);
             tokenInfoLayout.addView(stats1YearHigh);
 
-            historyChart.fetchHistory(token, HistoryChart.Range.Day);
-            populateStats(token)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::handleValues, e -> { /*TODO: Hide stats*/ })
-                    .isDisposed();
+            //AM -> Added
+            if (CustomViewSettings.stats())
+                historyChart.fetchHistory(token, HistoryChart.Range.Day);
+                populateStats(token)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::handleValues, e -> { /*TODO: Hide stats*/ })
+                        .isDisposed();
         }
     }
 
@@ -189,35 +194,36 @@ public class TokenInfoFragment extends BaseFragment {
         stats1YearHigh.setValue(TickerService.getFullCurrencyString(values.get(index++)));
     }
 
-    private void initTabLayout(View view)
-    {
-        TabLayout tabLayout = view.findViewById(R.id.tab_layout);
+    private void initTabLayout(View view) {
 
-        tabLayout.addTab(tabLayout.newTab().setText("1D"));
-        tabLayout.addTab(tabLayout.newTab().setText("1W"));
-        tabLayout.addTab(tabLayout.newTab().setText("1M"));
-        tabLayout.addTab(tabLayout.newTab().setText("3M"));
-        tabLayout.addTab(tabLayout.newTab().setText("1Y"));
-        
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab)
-            {
-                historyChart.fetchHistory(token, HistoryChart.Range.values()[tab.getPosition()]);
-            }
+        // AM -> Added
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab)
-            {
-            }
+        if (CustomViewSettings.stats()) {
+            TabLayout tabLayout = view.findViewById(R.id.tab_layout);
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab)
-            {
-            }
-        });
+            tabLayout.addTab(tabLayout.newTab().setText("1D"));
+            tabLayout.addTab(tabLayout.newTab().setText("1W"));
+            tabLayout.addTab(tabLayout.newTab().setText("1M"));
+            tabLayout.addTab(tabLayout.newTab().setText("3M"));
+            tabLayout.addTab(tabLayout.newTab().setText("1Y"));
 
-        TabUtils.setHighlightedTabColor(getContext(), tabLayout);
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    historyChart.fetchHistory(token, HistoryChart.Range.values()[tab.getPosition()]);
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+                }
+            });
+
+            TabUtils.setHighlightedTabColor(getContext(), tabLayout);
+        }
     }
 
     private void onPortfolioUpdated(TokenPortfolio tokenPortfolio)
@@ -379,3 +385,4 @@ public class TokenInfoFragment extends BaseFragment {
         return calendar.getTime();
     }
 }
+

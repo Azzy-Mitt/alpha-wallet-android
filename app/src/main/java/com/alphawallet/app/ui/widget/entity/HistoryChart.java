@@ -19,6 +19,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.alphawallet.app.R;
+import com.alphawallet.app.entity.CustomViewSettings;
 import com.alphawallet.app.entity.tokens.Token;
 import com.alphawallet.app.entity.tokens.TokenInfo;
 import com.alphawallet.app.service.TickerService;
@@ -188,55 +189,58 @@ public class HistoryChart extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    // AM -> Added
+        if (CustomViewSettings.stats()) {
+            super.onDraw(canvas);
 
-        Datasource datasource = cache.getCurrentDatasource(cache.range);
-        if (datasource == null || datasource.entries.size() == 0) {
-            // draw no chart data available message
-            int xPos = (getWidth() / 2);
-            int yPos = (int) ((getHeight() / 2) - ((textPaint.descent() + textPaint.ascent()) / 2));
-            canvas.drawText(getContext().getString(R.string.no_chart_data_available), xPos, yPos, textPaint);
-            return;
-        }
-
-        path.reset();
-
-        // draw chart
-        float width = getWidth();
-        float height = getHeight();
-
-        float xScale = width / (datasource.maxTime() - datasource.minTime());
-        float yScale = (height * 0.9f) / (datasource.maxValue() - datasource.minValue());
-
-        for (int i = 0; i < datasource.entries.size(); i++) {
-            Pair<Long, Float> entry = datasource.entries.get(i);
-
-            float x = (entry.first - datasource.minTime()) * xScale;
-            float y = height - (entry.second - datasource.minValue()) * yScale;
-
-            if (i == 0) {
-                path.moveTo(x, y);
-            } else {
-                path.lineTo(x, y);
+            Datasource datasource = cache.getCurrentDatasource(cache.range);
+            if (datasource == null || datasource.entries.size() == 0) {
+                // draw no chart data available message
+                int xPos = (getWidth() / 2);
+                int yPos = (int) ((getHeight() / 2) - ((textPaint.descent() + textPaint.ascent()) / 2));
+                canvas.drawText(getContext().getString(R.string.no_chart_data_available), xPos, yPos, textPaint);
+                return;
             }
+
+            path.reset();
+
+            // draw chart
+            float width = getWidth();
+            float height = getHeight();
+
+            float xScale = width / (datasource.maxTime() - datasource.minTime());
+            float yScale = (height * 0.9f) / (datasource.maxValue() - datasource.minValue());
+
+            for (int i = 0; i < datasource.entries.size(); i++) {
+                Pair<Long, Float> entry = datasource.entries.get(i);
+
+                float x = (entry.first - datasource.minTime()) * xScale;
+                float y = height - (entry.second - datasource.minValue()) * yScale;
+
+                if (i == 0) {
+                    path.moveTo(x, y);
+                } else {
+                    path.lineTo(x, y);
+                }
+            }
+
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setShader(null);
+            canvas.drawPath(path, paint);
+
+            if (gradient == null) {
+                // create gradient fill on the first run
+                gradient = new LinearGradient(0, 0, 0, height, 0xFFf7fbf4, 0xffffffff, Shader.TileMode.CLAMP);
+            }
+
+            paint.setShader(gradient);
+
+            // add bottom points
+            paint.setStyle(Paint.Style.FILL);
+            path.lineTo(width, height);
+            path.lineTo(0, height);
+            canvas.drawPath(path, paint);
         }
-
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setShader(null);
-        canvas.drawPath(path, paint);
-
-        if (gradient == null) {
-            // create gradient fill on the first run
-            gradient = new LinearGradient(0, 0, 0, height, 0xFFf7fbf4, 0xffffffff, Shader.TileMode.CLAMP);
-        }
-
-        paint.setShader(gradient);
-
-        // add bottom points
-        paint.setStyle(Paint.Style.FILL);
-        path.lineTo(width, height);
-        path.lineTo(0, height);
-        canvas.drawPath(path, paint);
     }
 
     public void fetchHistory(Token token, final Range range) {

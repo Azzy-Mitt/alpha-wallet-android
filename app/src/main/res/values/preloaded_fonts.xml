@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="preloaded_fonts" translatable="false">
-        <item>@font/font_light</item>
+        <!-- Added in Pyidaungsu font -->
+        <!--<item>@font/font_light</item>
         <item>@font/font_regular</item>
         <item>@font/font_bold</item>
+        <item>@font/font_semibold</item> -->
         <item>@font/font_semibold</item>
+        <item>@font/font_bold</item>
+        <item>@font/pyidaungsu_numbers</item>
     </array>
 </resources>

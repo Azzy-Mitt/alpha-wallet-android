@@ -248,7 +248,9 @@ public class NewSettingsFragment extends BaseFragment {
 
         walletSettingsLayout.addView(nameThisWallet, walletIndex++);
 
-        walletSettingsLayout.addView(walletConnectSetting, walletIndex++);
+        // AM -> Added
+        if (CustomViewSettings.walletConnectSetting())
+            walletSettingsLayout.addView(walletConnectSetting, walletIndex++);
 
         systemSettingsLayout.addView(notificationsSetting, systemIndex++);
 
@@ -257,9 +259,13 @@ public class NewSettingsFragment extends BaseFragment {
         if (CustomViewSettings.getLockedChains().size() == 0)
             systemSettingsLayout.addView(selectNetworksSetting, systemIndex++);
 
-        systemSettingsLayout.addView(advancedSetting, systemIndex++);
+        // AM -> Added System Settings
+        if (CustomViewSettings.systemSettingsLayout())
+            systemSettingsLayout.addView(advancedSetting, systemIndex++);
 
-        supportSettingsLayout.addView(supportSetting, supportIndex++);
+        // AM -> Added Support Settings
+        if (CustomViewSettings.supportSettingsLayout())
+            supportSettingsLayout.addView(supportSetting, supportIndex++);
     }
 
     private void setInitialSettingsData(View view) {

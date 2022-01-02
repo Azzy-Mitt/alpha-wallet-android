@@ -22,6 +22,7 @@ import java.math.BigInteger;
  * Created by Jenny Jingjing Li on 4/3/2021
  */
 
+
 public class BalanceDisplayWidget extends LinearLayout
 {
     public final TextView balance;
@@ -82,3 +83,4 @@ public class BalanceDisplayWidget extends LinearLayout
         newBalance.setText(getContext().getString(R.string.new_balance, newBalanceVal, token.getSymbol()));
     }
 }
+

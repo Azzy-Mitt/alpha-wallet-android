@@ -488,7 +488,8 @@ public class FunctionButtonBar extends LinearLayout implements AdapterView.OnIte
             default: {
                 moreActionsList.add(function);
                 moreActionsAdapter.notifyDataSetChanged();
-                moreButton.setVisibility(View.VISIBLE);
+                // AM -> Edited
+                moreButton.setVisibility(View.GONE);
                 moreButton.setOnClickListener(this);
             }
         }
@@ -569,6 +570,8 @@ public class FunctionButtonBar extends LinearLayout implements AdapterView.OnIte
         {
             addFunction(new ItemClick(context.getString(R.string.generate_payment_request), R.string.generate_payment_request));
         }
+
+
     }
 
     private void addTokenScriptFunctions(Map<String, TSAction> availableFunctions, Token token, BigInteger tokenId)

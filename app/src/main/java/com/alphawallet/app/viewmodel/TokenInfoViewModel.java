@@ -46,6 +46,8 @@ public class TokenInfoViewModel extends BaseViewModel {
         return stats;
     }
 
+
+
     public TokensService getTokensService() { return tokensService; }
 
     public AssetDefinitionService getAssetDefinitionService() { return assetDefinitionService; }
